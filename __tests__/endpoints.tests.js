@@ -1,5 +1,6 @@
 const request = require("supertest");
 const app = require("../app.js");
+const endpointsFile = require("../endpoints.json");
 
 describe("GET /api", () => {
   test("GET - status: 200 - responds with JSON listing all the available endpoints on the API at the moment", () => {
@@ -9,11 +10,7 @@ describe("GET /api", () => {
       .expect("Content-Type", "application/json; charset=utf-8")
       .then((response) => {
         const { endpoints } = response.body;
-        expect(Object.keys(endpoints)).toEqual([
-          "GET /api",
-          "GET /api/topics",
-          "GET /api/articles",
-        ]);
+        expect(Object.keys(endpoints)).toEqual(Object.keys(endpointsFile));
       });
   });
 
@@ -24,36 +21,7 @@ describe("GET /api", () => {
       .expect("Content-Type", "application/json; charset=utf-8")
       .then((response) => {
         const { endpoints } = response.body;
-        expect(endpoints).toEqual({
-          "GET /api": {
-            description:
-              "serves up a json representation of all the available endpoints of the api",
-          },
-          "GET /api/topics": {
-            description: "serves an array of all topics",
-            queries: [],
-            exampleResponse: {
-              topics: [{ slug: "football", description: "Footie!" }],
-            },
-          },
-          "GET /api/articles": {
-            description: "serves an array of all topics",
-            queries: ["author", "topic", "sort_by", "order"],
-            exampleResponse: {
-              articles: [
-                {
-                  title: "Seafood substitutions are increasing",
-                  topic: "cooking",
-                  author: "weegembump",
-                  body: "Text from the article..",
-                  created_at: "2018-05-30T15:59:13.341Z",
-                  votes: 0,
-                  comment_count: 6,
-                },
-              ],
-            },
-          },
-        });
+        expect(endpoints).toEqual(endpointsFile);
       });
   });
 
