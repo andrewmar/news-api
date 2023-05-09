@@ -27,7 +27,7 @@ describe("GET api/topics", () => {
         });
       });
   });
-  test("GET - status: 404 - when provided non-existen endpoint  ", () => {
+  test("GET - status: 404 - when provided non-existent endpoint  ", () => {
     return request(app).get("/api/topicss").expect(404);
   });
 });
