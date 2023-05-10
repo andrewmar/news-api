@@ -42,7 +42,7 @@ describe("GET /api/articles/:article_id", () => {
       .then((response) => {
         const { msg } = response.body;
 
-        expect(msg).toBe("Not found!");
+        expect(msg).toBe("Article not found!");
       });
   });
   test("GET - status: 400 - invalid article id", () => {
@@ -56,5 +56,41 @@ describe("GET /api/articles/:article_id", () => {
 
         expect(msg).toBe("Invalid input");
       });
+  });
+});
+describe("GET api/articles", () => {
+  test("GET - status: 200 - responds with an array of article objects ", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+
+        expect(articles.length).toBe(12);
+        articles.forEach((article) => {
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.article_id).toBe("number");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(typeof article.comment_count).toBe("number");
+        });
+      });
+  });
+  test("GET - status: 200 - responds with an array of article objects sorted by created_at in descending order ", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+
+        expect(articles.length).toBe(12);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("GET - status: 404 - when provided non-existent endpoint  ", () => {
+    return request(app).get("/api/articless").expect(404);
   });
 });
