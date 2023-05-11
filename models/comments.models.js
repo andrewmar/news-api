@@ -1,4 +1,8 @@
 const db = require("../db/connection.js");
+const {
+  checkArticleExists,
+  checkUserExists,
+} = require("../utilsForApi/utilsForApi.js");
 
 exports.selectCommentsByArticleId = (id) => {
   return db
@@ -23,25 +27,20 @@ exports.selectCommentsByArticleId = (id) => {
 
 exports.addComment = (articleId, commentBody) => {
   const { body, username } = commentBody;
-  return db
-    .query(`SELECT * FROM users WHERE username = $1`, [username])
-    .then((result) => {
-      if (result.rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "User not found" });
-      }
 
-      const queryArr = [username, body, articleId];
-      const queryString = `
-          INSERT INTO comments
-          (author, body, article_id)
-          VALUES
-          ($1, $2, $3)
-          RETURNING *;
-        `;
-      return db.query(queryString, queryArr);
-    })
-    .then(({ rows }) => {
-      const commentAdded = rows[0];
-      return commentAdded;
-    });
+  const queryArr = [username, body, articleId];
+  const queryString = `
+      INSERT INTO comments
+      (author, body, article_id)
+      VALUES
+      ($1, $2, $3)
+      RETURNING *;
+    `;
+  const checkArticle = checkArticleExists(articleId);
+  const checkUser = checkUserExists(username);
+  const queryPromise = db.query(queryString, queryArr);
+
+  return Promise.all([checkArticle, checkUser, queryPromise]).then((result) => {
+    return result[2].rows[0];
+  });
 };
