@@ -83,3 +83,52 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("POST - status:201 - returns created comment", () => {
+    const id = 1;
+    return request(app)
+      .post(`/api/articles/${id}/comments`)
+      .expect(201)
+      .send({
+        body: "Hello",
+        username: "butter_bridge",
+      })
+      .then((response) => {
+        const { comment } = response.body;
+
+        expect(comment.comment_id).toBe(19);
+        expect(comment.body).toBe("Hello");
+        expect(comment.article_id).toBe(1);
+        expect(comment.author).toBe("butter_bridge");
+        expect(comment.votes).toBe(0);
+        expect(typeof comment.created_at).toBe("string");
+      });
+  });
+  test("POST - status:400 - missing required fields", () => {
+    const id = 1;
+    return request(app)
+      .post(`/api/articles/${id}/comments`)
+      .expect(400)
+      .send({
+        username: "butter_bridge",
+      })
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("Missing required fields");
+      });
+  });
+  test("POST - status:404 - no user found", () => {
+    const id = 1;
+    return request(app)
+      .post(`/api/articles/${id}/comments`)
+      .expect(404)
+      .send({
+        username: "butter",
+      })
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("User not found");
+      });
+  });
+});
