@@ -9,9 +9,7 @@ exports.getArticleById = (request, response, next) => {
     .then((article) => {
       response.status(200).send({ article });
     })
-    .catch((error) => {
-      next(error);
-    });
+    .catch(next);
 };
 
 exports.getAllArticles = (request, response, next) => {
