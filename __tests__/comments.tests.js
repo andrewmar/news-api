@@ -28,7 +28,7 @@ describe("GET /api/articles/:article_id/comments", () => {
           expect(typeof comment.created_at).toBe("string");
           expect(typeof comment.author).toBe("string");
           expect(typeof comment.body).toBe("string");
-          expect(typeof comment.article_id).toBe("number");
+          expect(comment.article_id).toBe(1);
         });
       });
   });
@@ -43,6 +43,18 @@ describe("GET /api/articles/:article_id/comments", () => {
         const { comments } = response.body;
         expect(comments.length).toBe(11);
         expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("GET - status: 200 - responds with an empty array when article doesn't have any comments ", () => {
+    const articleId = 2;
+
+    return request(app)
+      .get(`/api/articles/${articleId}/comments`)
+      .expect(200)
+      .then((response) => {
+        const { comments } = response.body;
+        expect(comments.length).toBe(0);
       });
   });
 
