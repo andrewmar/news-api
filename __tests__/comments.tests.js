@@ -131,4 +131,36 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(msg).toBe("User not found");
       });
   });
+  test("GET - status: 404 - valid but non-existent article id", () => {
+    const articleId = 9999;
+
+    return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .expect(404)
+      .send({
+        body: "Hello",
+        username: "butter_bridge",
+      })
+      .then((response) => {
+        const { msg } = response.body;
+
+        expect(msg).toBe("Article not found");
+      });
+  });
+  test("GET - status: 400 - invalid article id", () => {
+    const articleId = "nonsense";
+
+    return request(app)
+      .post(`/api/articles/${articleId}/comments`)
+      .expect(400)
+      .send({
+        body: "Hello",
+        username: "butter_bridge",
+      })
+      .then((response) => {
+        const { msg } = response.body;
+
+        expect(msg).toBe("Invalid input");
+      });
+  });
 });
