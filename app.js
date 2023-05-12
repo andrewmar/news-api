@@ -16,7 +16,7 @@ const {
   postComment,
   deleteCommentById,
 } = require("./controllers/comments.controllers.js");
-const { getAllUsers } = require("./controllers/users.conteollers");
+const { getAllUsers } = require("./controllers/users.controllers");
 
 const app = express();
 app.use(express.json());
