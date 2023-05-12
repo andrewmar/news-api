@@ -94,3 +94,72 @@ describe("GET api/articles", () => {
     return request(app).get("/api/articless").expect(404);
   });
 });
+describe("PATCH /api/articles/:article_id", () => {
+  test("PATCH - status: - 200 responds with the updated article ", () => {
+    const newVote = { inc_votes: 1 };
+    const articleId = 1;
+    return request(app)
+      .patch(`/api/articles/${articleId}`)
+      .expect(200)
+      .send(newVote)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article.author).toBe("butter_bridge");
+        expect(article.title).toBe("Living in the shadow of a great man");
+        expect(article.article_id).toBe(1);
+        expect(article.body).toBe("I find this existence challenging");
+        expect(article.topic).toBe("mitch");
+        expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
+        expect(article.votes).toBe(101);
+        expect(article.article_img_url).toBe(
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        );
+      });
+  });
+  test("PATCH - status: - 404: responds with an error if article_id is invalid", () => {
+    const articleId = 0;
+    return request(app)
+      .patch(`/api/articles/${articleId}`)
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("Article not found");
+      });
+  });
+  test("PATCH - status: - 400: responds with an error for invalid vote value", () => {
+    const articleId = 1;
+    const inc = "nonsense";
+    return request(app)
+      .patch(`/api/articles/${articleId}`)
+      .send({ inc_votes: inc })
+      .expect(400)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("Invalid input");
+      });
+  });
+  test("PATCH - status: - 400: responds with an error for invalid vote value range", () => {
+    const articleId = 1;
+    const inc = -21474836479;
+    return request(app)
+      .patch(`/api/articles/${articleId}`)
+      .send({ inc_votes: inc })
+      .expect(400)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("Invalid input");
+      });
+  });
+  test("PATCH - status: - 400: responds with an error for missing body", () => {
+    const articleId = 1;
+    return request(app)
+      .patch(`/api/articles/${articleId}`)
+      .send({})
+      .expect(400)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("Missing request body");
+      });
+  });
+});

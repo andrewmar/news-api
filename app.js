@@ -5,6 +5,7 @@ const { handleCustomErrors, handlePsqlErrors } = require("./errors");
 const {
   getArticleById,
   getAllArticles,
+  patchArticleVotes,
 } = require("./controllers/articles.controllers.js");
 const {
   getCommentsByArticleId,
@@ -20,6 +21,7 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
+app.patch("/api/articles/:article_id", patchArticleVotes);
 
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
