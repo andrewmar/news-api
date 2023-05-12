@@ -3,6 +3,7 @@ const app = require("../app.js");
 const connection = require("../db/connection.js");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data/index.js");
+const { describe } = require("@jest/globals");
 
 beforeEach(() => {
   return seed(testData);
@@ -160,6 +161,32 @@ describe("POST /api/articles/:article_id/comments", () => {
       .then((response) => {
         const { msg } = response.body;
 
+        expect(msg).toBe("Invalid input");
+      });
+  });
+});
+describe("DELETE /api/comments/:comment_id", () => {
+  test("DELETE - status: 204 - deletes the given comment by comment id", () => {
+    const commentId = 1;
+    return request(app).delete(`/api/comments/${commentId}`).expect(204);
+  });
+  test("DELETE - status: 404 - comment id not found", () => {
+    const commentId = 9999;
+    return request(app)
+      .delete(`/api/comments/${commentId}`)
+      .expect(404)
+      .then((response) => {
+        const { msg } = response.body;
+        expect(msg).toBe("Comment not found");
+      });
+  });
+  test("DELETE - status: 404 - invalid input", () => {
+    const commentId = "nonsense";
+    return request(app)
+      .delete(`/api/comments/${commentId}`)
+      .expect(400)
+      .then((response) => {
+        const { msg } = response.body;
         expect(msg).toBe("Invalid input");
       });
   });
