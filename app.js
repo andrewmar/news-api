@@ -1,7 +1,11 @@
 const express = require("express");
 const { getAllTopics } = require("./controllers/topics.controllers");
 const { getAllEndpoints } = require("./controllers/endpoints.controllers");
-const { handleCustomErrors, handlePsqlErrors } = require("./errors");
+const {
+  handleCustomErrors,
+  handlePsqlErrors,
+  handleNonExistentEndpoints,
+} = require("./errors");
 const {
   getArticleById,
   getAllArticles,
@@ -12,6 +16,7 @@ const {
   postComment,
   deleteCommentById,
 } = require("./controllers/comments.controllers.js");
+const { getAllUsers } = require("./controllers/users.conteollers");
 
 const app = express();
 app.use(express.json());
@@ -24,8 +29,10 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
 app.patch("/api/articles/:article_id", patchArticleVotes);
 app.delete("/api/comments/:comment_id", deleteCommentById);
+app.get("/api/users", getAllUsers);
 
 app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
+app.use(handleNonExistentEndpoints);
 
 module.exports = app;
