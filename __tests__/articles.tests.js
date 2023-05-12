@@ -33,6 +33,16 @@ describe("GET /api/articles/:article_id", () => {
         );
       });
   });
+  test("GET - status: 200 - responds with an article object with comments count property ", () => {
+    const articleId = 1;
+    return request(app)
+      .get(`/api/articles/${articleId}`)
+      .expect(200)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article.comment_count).toBe(11);
+      });
+  });
   test("GET - status: 404 - valid but non-existent article id", () => {
     const articleId = 9999;
 
