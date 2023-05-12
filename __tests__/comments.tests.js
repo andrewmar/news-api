@@ -4,6 +4,7 @@ const connection = require("../db/connection.js");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data/index.js");
 const { describe } = require("@jest/globals");
+const { checkCommentExists } = require("../utilsForApi/utilsForApi.js");
 
 beforeEach(() => {
   return seed(testData);
@@ -168,9 +169,17 @@ describe("POST /api/articles/:article_id/comments", () => {
 describe("DELETE /api/comments/:comment_id", () => {
   test("DELETE - status: 204 - deletes the given comment by comment id", () => {
     const commentId = 1;
-    return request(app).delete(`/api/comments/${commentId}`).expect(204);
+    return request(app)
+      .delete(`/api/comments/${commentId}`)
+      .expect(204)
+      .then(() => {
+        return expect(checkCommentExists(commentId)).rejects.toMatchObject({
+          status: 404,
+          msg: "Comment not found",
+        });
+      });
   });
-  test("DELETE - status: 404 - comment id not found", () => {
+  test("DELETE - status: 404 - comment not found", () => {
     const commentId = 9999;
     return request(app)
       .delete(`/api/comments/${commentId}`)
