@@ -12,3 +12,7 @@ exports.handlePsqlErrors = (err, req, res, next) => {
     res.status(400).send({ msg: "Missing required fields" });
   } else next(err);
 };
+
+exports.handleNonExistentEndpoints = (req, res, next) => {
+  res.status(404).send("Not found");
+};
