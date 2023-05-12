@@ -5,6 +5,7 @@ const {
   checkArticleExists,
   checkUserExists,
   checkCommentExists,
+  checkTopicExists
 } = require("../utilsForApi/utilsForApi.js");
 
 beforeEach(() => {
@@ -49,5 +50,17 @@ describe("checkCommentExists", () => {
 
   test("should return a resolved promise if article exists", async () => {
     await expect(checkCommentExists(15)).toResolve();
+  });
+});
+describe("checkTopicExists", () => {
+  test("should return 404 error and a message if comment does not exist", () => {
+    return checkTopicExists("nonsense").catch((err) => {
+      expect(err.status).toBe(404);
+      expect(err.msg).toBe("Topic not found");
+    });
+  });
+
+  test("should return a resolved promise if article exists", async () => {
+    await expect(checkTopicExists("mitch")).toResolve();
   });
 });

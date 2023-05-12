@@ -93,6 +93,99 @@ describe("GET api/articles", () => {
   test("GET - status: 404 - when provided non-existent endpoint  ", () => {
     return request(app).get("/api/articless").expect(404);
   });
+  describe('GET api/articles"(queries)', () => {
+    test("GET - status: 200 - responds with an array of article objects sorted by topic ", () => {
+      const queryTopic = "mitch";
+
+      return request(app)
+        .get(`/api/articles?topic=${queryTopic}`)
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles.length).toBe(11);
+          articles.forEach((article) => {
+            expect(article.topic).toBe(queryTopic);
+          });
+        });
+    });
+    test("GET status:200, returns an empty array for the topic with no articles ", () => {
+      const queryTopic = "paper";
+      return request(app)
+        .get(`/api/articles?topic=${queryTopic}`)
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+          expect(articles.length).toBe(0);
+        });
+    });
+    test("GET status:404, returns error message when topic not found", () => {
+      const queryTopic = "nonsense";
+      return request(app)
+        .get(`/api/articles?topic=${queryTopic}`)
+        .expect(404)
+        .then((res) => {
+          const { msg } = res.body;
+          expect(msg).toBe("Topic not found");
+        });
+    });
+    test("GET - status: 200 - responds with an array of article objects sorted by created at in ascending order", () => {
+      const order = "asc";
+      return request(app)
+        .get(`/api/articles?order=${order}`)
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+
+          expect(articles.length).toBe(12);
+          expect(articles).toBeSortedBy("created_at");
+        });
+    });
+    test("GET - status: 400 - invalid order query", () => {
+      const order = "; DROP TABLE topics";
+      return request(app)
+        .get(`/api/articles?order=${order}`)
+        .expect(400)
+        .then((response) => {
+          const { msg } = response.body;
+          expect(msg).toBe("Invalid order query");
+        });
+    });
+    test("GET - status: 200 - responds with an array of article objects sorted by author in descending order", () => {
+      const sortBy = "author";
+      return request(app)
+        .get(`/api/articles?sort_by=${sortBy}`)
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+
+          expect(articles.length).toBe(12);
+          expect(articles).toBeSortedBy("author", { descending: true });
+        });
+    });
+    test("GET - status: 200 - responds with an array of article objects sorted by comments count in ascending order", () => {
+      const sortBy = "comment_count";
+      const order = "asc";
+      return request(app)
+        .get(`/api/articles?sort_by=${sortBy}&order=${order}`)
+        .expect(200)
+        .then((response) => {
+          const { articles } = response.body;
+
+          expect(articles.length).toBe(12);
+          expect(articles).toBeSortedBy("comment_count");
+        });
+    });
+    test("GET - status: 400 - invalid sort query", () => {
+      const sortBY = "; DROP TABLE topics";
+      return request(app)
+        .get(`/api/articles?sort_by=${sortBY}`)
+        .expect(400)
+        .then((response) => {
+          const { msg } = response.body;
+          expect(msg).toBe("Invalid sort query");
+        });
+    });
+  });
 });
 describe("PATCH /api/articles/:article_id", () => {
   test("PATCH - status: - 200 responds with the updated article ", () => {
