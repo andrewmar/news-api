@@ -103,7 +103,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(200)
       .send(newVote)
       .then((response) => {
-        const { updatedArticle: article } = response.body;
+        const { article } = response.body;
         expect(article.author).toBe("butter_bridge");
         expect(article.title).toBe("Living in the shadow of a great man");
         expect(article.article_id).toBe(1);
