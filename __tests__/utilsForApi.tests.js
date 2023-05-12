@@ -4,6 +4,7 @@ const db = require("./../db/connection.js");
 const {
   checkArticleExists,
   checkUserExists,
+  checkCommentExists,
 } = require("../utilsForApi/utilsForApi.js");
 
 beforeEach(() => {
@@ -36,5 +37,17 @@ describe("checkUserExists", () => {
 
   test("should resolve a promise if user exists", async () => {
     await expect(checkUserExists("butter_bridge")).toResolve();
+  });
+});
+describe("checkCommentExists", () => {
+  test("should return 404 error and a message if comment does not exist", () => {
+    return checkCommentExists(9999).catch((err) => {
+      expect(err.status).toBe(404);
+      expect(err.msg).toBe("Comment not found");
+    });
+  });
+
+  test("should return a resolved promise if article exists", async () => {
+    await expect(checkCommentExists(15)).toResolve();
   });
 });

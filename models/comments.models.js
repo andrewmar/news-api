@@ -44,3 +44,18 @@ exports.addComment = (articleId, commentBody) => {
     return result[2].rows[0];
   });
 };
+exports.removeCommentById = (id) => {
+  return db
+    .query(
+      `DELETE FROM comments
+    WHERE comment_id = $1;
+  `,
+      [id]
+    )
+    .then((result) => {
+      if (result.rowCount === 0) {
+        return Promise.reject({ status: 404, msg: "Comment not found" });
+      }
+      return result.rowCount;
+    });
+};
