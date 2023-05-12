@@ -5,12 +5,8 @@ const {
   checkArticleExists,
   checkUserExists,
   checkCommentExists,
-  checkTopicExists
+  checkTopicExists,
 } = require("../utilsForApi/utilsForApi.js");
-
-beforeEach(() => {
-  return seed(testData);
-});
 
 afterAll(() => {
   db.end();
