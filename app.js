@@ -17,8 +17,10 @@ const {
   deleteCommentById,
 } = require("./controllers/comments.controllers.js");
 const { getAllUsers } = require("./controllers/users.controllers");
+const cors = require("cors");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.get("/api/topics", getAllTopics);
